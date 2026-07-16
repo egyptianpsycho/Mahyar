@@ -1,4 +1,5 @@
 "use client";
+import { OptimizedImage } from "./OptimizedImage";
 function Placeholder({
   label,
   kind = "photo",
@@ -6,7 +7,8 @@ function Placeholder({
   index,
   seed,
   width = 800,
-  height = 1e3
+  height = 1e3,
+  onLoad
 }) {
   const s = seed ?? index ?? label ?? "mahyar";
   const safeSeed = encodeURIComponent(String(s));
@@ -14,12 +16,13 @@ function Placeholder({
   return <div
     className={`relative w-full h-full overflow-hidden bg-placeholder ring-1 ring-foreground/5 ${className}`}
   >
-      <img
-    src={imgUrl}
-    alt={label ?? `Placeholder ${index ?? ""}`}
-    loading="lazy"
-    className="absolute inset-0 w-full h-full object-cover"
-  />
+      <OptimizedImage
+        src={imgUrl}
+        alt={label ?? `Placeholder ${index ?? ""}`}
+        sizes="(max-width: 768px) 100vw, 50vw"
+        className="object-cover"
+        onLoad={onLoad}
+      />
       {
     /* subtle dark tint to keep the editorial feel */
   }

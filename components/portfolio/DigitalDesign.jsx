@@ -1,7 +1,8 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { designProjects } from "@/data/projects";
+import { OptimizedImage } from "./OptimizedImage";
 const makeSeeds = (id, n) => Array.from({ length: n }, (_, i) => `${id}-${i + 1}`);
 const toProject = (d) => ({
   id: d.id,
@@ -18,15 +19,16 @@ const toProject = (d) => ({
 const imgSrc = (seed) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/600/420`;
 function Row({ d, onOpen }) {
   const wrapRef = useRef(null);
+  const [imageReady, setImageReady] = useState(false);
   const EASE = "power3.inOut";
   const DUR = 0.5;
   const enter = () => {
-    if (!wrapRef.current) return;
+    if (!wrapRef.current || !imageReady) return;
     gsap.killTweensOf(wrapRef.current);
     gsap.to(wrapRef.current, { width: "10vw", duration: DUR, ease: EASE });
   };
   const leave = () => {
-    if (!wrapRef.current) return;
+    if (!wrapRef.current || !imageReady) return;
     gsap.killTweensOf(wrapRef.current);
     gsap.to(wrapRef.current, { width: 0, duration: DUR, ease: EASE });
   };
@@ -41,14 +43,16 @@ function Row({ d, onOpen }) {
       </p>
       <div
     ref={wrapRef}
-    className="overflow-hidden flex justify-center"
+    className="relative overflow-hidden flex justify-center h-[7vw] md:h-[5vw]"
     style={{ width: 0, willChange: "width" }}
   >
-        <img
-    src={imgSrc(d.seed)}
-    alt=""
-    className="h-[7vw] md:h-[5vw] w-[10vw] object-cover"
-  />
+        <OptimizedImage
+          src={imgSrc(d.seed)}
+          alt=""
+          className="object-cover"
+          sizes="10vw"
+          onLoad={() => setImageReady(true)}
+        />
       </div>
       <p className="font-display uppercase tracking-tighter text-[7vw] md:text-[5vw] leading-none ml-[0.75vw] transition-colors group-hover:text-accent">
         {d.title2}

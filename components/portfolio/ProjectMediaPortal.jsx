@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
 import { getLenis } from "@/hooks/useLenis";
+import { OptimizedImage } from "./OptimizedImage";
 const ASPECTS = [
   "aspect-[4/5]",
   "aspect-[3/4]",
@@ -22,11 +23,11 @@ function MediaTile({ item, className }) {
       className={className}
     />;
   }
-  return <img
+  return <OptimizedImage
     src={item.src}
     alt={item.alt ?? ""}
-    loading="lazy"
     className={className}
+    sizes="(max-width: 768px) 100vw, 50vw"
   />;
 }
 function ProjectMediaPortal({ project, onClose }) {
@@ -41,7 +42,9 @@ function ProjectMediaPortal({ project, onClose }) {
     lenis?.stop();
     const hasVideo = project.media.some((m) => m.type === "video");
     setView(hasVideo ? "stream" : "grid");
-    const ctx = gsap.context(() => {
+    let ctx;
+    const animatePortal = () => {
+      ctx = gsap.context(() => {
       gsap.fromTo(
         ref.current,
         { clipPath: "inset(50% 30% 50% 30% round 24px)", opacity: 0.8 },
@@ -55,7 +58,15 @@ function ProjectMediaPortal({ project, onClose }) {
         ease: "expo.out",
         delay: 0.35
       });
-    }, ref);
+      }, ref);
+    };
+    const image = ref.current.querySelector("img");
+    if (!image || (image.complete && image.naturalWidth > 0)) {
+      animatePortal();
+    } else {
+      image.addEventListener("load", animatePortal, { once: true });
+      image.addEventListener("error", animatePortal, { once: true });
+    }
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowRight") scrollBySlide(1);
@@ -63,7 +74,9 @@ function ProjectMediaPortal({ project, onClose }) {
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      ctx.revert();
+      image?.removeEventListener("load", animatePortal);
+      image?.removeEventListener("error", animatePortal);
+      ctx?.revert();
       window.removeEventListener("keydown", onKey);
       lenis?.start();
     };

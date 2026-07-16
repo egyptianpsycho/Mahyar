@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { photoProjects } from "@/data/projects";
 import { Placeholder } from "./Placeholder";
+import { animateWhenImageReady } from "@/lib/animate-when-image-ready";
 gsap.registerPlugin(ScrollTrigger);
 function Photography({ onOpen, hideHeader }) {
   const ref = useRef(null);
@@ -11,24 +12,24 @@ function Photography({ onOpen, hideHeader }) {
     if (!ref.current) return;
     const ctx = gsap.context(() => {
       gsap.utils.toArray(".photo-tile").forEach((tile) => {
-        gsap.from(tile, {
-          y: 80,
-          opacity: 0,
-          duration: 1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: tile, start: "top 90%" }
+        const reveal = animateWhenImageReady(tile, () => {
+          gsap.fromTo(tile, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out" });
         });
+        ScrollTrigger.create({ trigger: tile, start: "top 90%", once: true, onEnter: reveal.waitForImage });
         const inner = tile.querySelector(".photo-inner");
         if (inner) {
-          gsap.fromTo(
-            inner,
-            { yPercent: -8 },
-            {
-              yPercent: 8,
-              ease: "none",
-              scrollTrigger: { trigger: tile, start: "top bottom", end: "bottom top", scrub: true }
-            }
-          );
+          const parallax = animateWhenImageReady(tile, () => {
+            gsap.fromTo(
+              inner,
+              { yPercent: -8 },
+              {
+                yPercent: 8,
+                ease: "none",
+                scrollTrigger: { trigger: tile, start: "top bottom", end: "bottom top", scrub: true }
+              }
+            );
+          });
+          ScrollTrigger.create({ trigger: tile, start: "top bottom", once: true, onEnter: parallax.waitForImage });
         }
       });
     }, ref);

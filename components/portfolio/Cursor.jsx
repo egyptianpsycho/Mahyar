@@ -28,7 +28,8 @@ function pointHitsText(el, x, y) {
       range.selectNodeContents(node);
       const rects = range.getClientRects();
       for (const r of Array.from(rects)) {
-        if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+        const lineGapPadding = 10;
+        if (x >= r.left && x <= r.right && y >= r.top - lineGapPadding && y <= r.bottom + lineGapPadding) {
           range.detach?.();
           return true;
         }
@@ -52,6 +53,7 @@ function Cursor() {
     const xRing = gsap.quickTo(ring, "x", { duration: 0.4, ease: "power3.out" });
     const yRing = gsap.quickTo(ring, "y", { duration: 0.4, ease: "power3.out" });
     let isText = false;
+    let isCardSurface = false;
     const evaluate = (x, y) => {
       const el = document.elementFromPoint(x, y);
       let hit = false;
@@ -71,9 +73,13 @@ function Cursor() {
           }
         }
       }
-      if (hit !== isText) {
+      const nextIsCardSurface = Boolean(el?.closest("[data-cursor-card]")) && !hit;
+      if (hit !== isText || nextIsCardSurface !== isCardSurface) {
         isText = hit;
+        isCardSurface = nextIsCardSurface;
         ring.classList.toggle("cursor-ring--text", hit);
+        ring.classList.toggle("cursor-ring--service-card", isCardSurface);
+        dot.classList.toggle("cursor-dot--service-card", isCardSurface);
       }
     };
     const onMove = (e) => {

@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { videoProjects } from "@/data/projects";
 import { Placeholder } from "./Placeholder";
+import { animateWhenImageReady } from "@/lib/animate-when-image-ready";
 gsap.registerPlugin(ScrollTrigger);
 const SPANS = [
   "col-span-2 row-span-2 aspect-[4/5]",
@@ -27,13 +28,10 @@ function Videography({ onOpen, hideHeader }) {
     if (!ref.current) return;
     const ctx = gsap.context(() => {
       gsap.utils.toArray(".video-tile").forEach((tile) => {
-        gsap.from(tile, {
-          y: 60,
-          opacity: 0,
-          duration: 1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: tile, start: "top 92%" }
+        const reveal = animateWhenImageReady(tile, () => {
+          gsap.fromTo(tile, { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out" });
         });
+        ScrollTrigger.create({ trigger: tile, start: "top 92%", once: true, onEnter: reveal.waitForImage });
       });
     }, ref);
     return () => ctx.revert();

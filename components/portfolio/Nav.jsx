@@ -10,7 +10,7 @@ const RING_SIZE = 26;
 const RING_STROKE = 1.5;
 const RING_R = (RING_SIZE - RING_STROKE) / 2;
 const RING_C = 2 * Math.PI * RING_R;
-function Nav() {
+function Nav({ introDone = true }) {
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState("");
@@ -99,33 +99,26 @@ function Nav() {
   return <>
       <nav
     aria-label="Primary"
-    className="fixed top-3 md:top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+    className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-10 md:pt-7 pointer-events-none"
+    style={{ opacity: introDone ? 1 : 0, transform: introDone ? "translateY(0)" : "translateY(-16px)", transition: `opacity 500ms ${easing}, transform 700ms ${easing}` }}
   >
         <div
     className={[
-      "pointer-events-auto flex items-center gap-2 md:gap-5 rounded-full border border-border/60 shadow-[0_10px_40px_-20px_rgba(0,0,0,0.6)]",
-      "relative overflow-hidden",
-      scrolled ? "bg-background/70 backdrop-blur-2xl px-2.5 md:px-3 py-1.5 md:py-1.5" : "bg-background/40 backdrop-blur-xl px-3 md:px-4 py-2 md:py-2.5"
+      "pointer-events-auto relative mx-auto flex w-full max-w-[1600px] items-center justify-between gap-2 border-y border-white/20 py-3 md:gap-5",
+      "transition-colors duration-500",
+      scrolled ? "bg-background/45 backdrop-blur-xl" : "bg-transparent"
     ].join(" ")}
     style={{ transition: `all 500ms ${easing}` }}
   >
           {
     /* subtle inset highlight */
   }
-          <span
-    aria-hidden
-    className="pointer-events-none absolute inset-0 rounded-full"
-    style={{
-      background: "linear-gradient(180deg, color-mix(in oklab, white 6%, transparent) 0%, transparent 35%, color-mix(in oklab, white 3%, transparent) 100%)"
-    }}
-  />
-
           {
     /* Logo */
   }
           <a
     href="#top"
-    className="relative flex items-center font-display tracking-tight pl-1 pr-1 md:pr-2"
+    className="relative flex items-center font-display text-xl tracking-tight md:text-2xl"
     aria-label="Mahyar — home"
   >
             <span
@@ -150,21 +143,19 @@ function Nav() {
           {
     /* Divider */
   }
-          <span aria-hidden className="hidden md:block h-4 w-px bg-border/70" />
-
           {
     /* Links */
   }
           <ul
     ref={listRef}
-    className="hidden md:flex relative items-center gap-1"
+    className="hidden md:flex relative items-center gap-5"
   >
             {
     /* magic line */
   }
             <span
     aria-hidden
-    className="absolute inset-y-1 rounded-full bg-foreground/10"
+    className="absolute -bottom-3 h-px bg-accent"
     style={{
       left: indicator.left,
       width: indicator.width,
@@ -182,8 +173,8 @@ function Nav() {
         itemRefs.current[l.id] = el;
       }}
       className={[
-        "group relative block font-mono uppercase rounded-full",
-        scrolled ? "text-[10px] tracking-[0.22em] px-2.5 py-1.5" : "text-[10.5px] tracking-[0.25em] px-3 py-2",
+        "group relative block font-mono uppercase",
+        scrolled ? "text-[10px] tracking-[0.22em]" : "text-[10.5px] tracking-[0.25em]",
         isActive ? "text-foreground" : "text-foreground/55 hover:text-foreground"
       ].join(" ")}
       style={{ transition: `color 300ms ${easing}, padding 500ms ${easing}, font-size 500ms ${easing}` }}
@@ -207,8 +198,6 @@ function Nav() {
           {
     /* Divider */
   }
-          <span aria-hidden className="hidden md:block h-4 w-px bg-border/70" />
-
           {
     /* Right — progress ring + status */
   }

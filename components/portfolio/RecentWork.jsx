@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { recentProjects } from "@/data/projects";
 import { recentMediaProjects } from "@/data/mediaProjects";
+import { OptimizedImage } from "./OptimizedImage";
 gsap.registerPlugin(ScrollTrigger);
 const imgSrc = (seed) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/700`;
 const EASE_OPEN = "expo.out";
@@ -189,15 +190,16 @@ function RecentWork({ onOpen, onOpenMedia }) {
     className="absolute inset-0 w-full h-full"
     style={{ transition: "top 0.5s cubic-bezier(0.76, 0, 0.24, 1)", top: 0 }}
   >
-            {recentProjects.slice(0, 4).map((p) => <div key={p.id} className="w-full h-full flex items-center justify-center">
-                <img src={imgSrc(p.seeds[0])} alt="" className="w-full h-full object-cover" />
+            {recentProjects.slice(0, 4).map((p) => <div key={p.id} className="relative w-full h-full flex items-center justify-center">
+                <OptimizedImage src={imgSrc(p.seeds[0])} alt="" className="object-cover" sizes="400px" />
               </div>)}
-            {recentMediaProjects.map((p) => <div key={p.id} className="w-full h-full flex items-center justify-center">
-                <img
-    src={p.media.find((m) => m.type === "image")?.src ?? p.media[0].poster ?? imgSrc(p.id)}
-    alt=""
-    className="w-full h-full object-cover"
-  />
+            {recentMediaProjects.map((p) => <div key={p.id} className="relative w-full h-full flex items-center justify-center">
+                <OptimizedImage
+                  src={p.media.find((m) => m.type === "image")?.src ?? p.media[0].poster ?? imgSrc(p.id)}
+                  alt=""
+                  className="object-cover"
+                  sizes="400px"
+                />
               </div>)}
           </div>
         </div>

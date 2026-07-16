@@ -1,152 +1,113 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { Placeholder } from "./Placeholder";
-const FRAMES = Array.from({ length: 12 }, (_, i) => i);
-const WORDS = ["Digital Marketing", "Photography", "Videography", "Digital Design"];
+import { CustomEase } from "gsap/CustomEase";
+import { OptimizedImage } from "./OptimizedImage";
+
+gsap.registerPlugin(CustomEase);
+
+const INTRO_IMAGES = ["/assets/3.webp", "/assets/CubeE.webp", "/assets/hero.png", "/assets/Horse2.webp", "/assets/Jumeriah5.jpg"];
+const ROTATIONS = [-10, 5, -3, -5, 10];
+
 function Intro({ onDone }) {
   const rootRef = useRef(null);
-  const counterRef = useRef(null);
-  const [done, setDone] = useState(false);
+  const imageRefs = useRef([]);
+  const [loadedImages, setLoadedImages] = useState(0);
+
   useEffect(() => {
-    if (!rootRef.current) return;
+    if (!rootRef.current || loadedImages !== INTRO_IMAGES.length) return;
+
+    const hop = CustomEase.create("mahyar-hop", "M0,0 C0,0 0.1,1 1,1");
+    const glide = CustomEase.create("mahyar-glide", "M0,0 C0.5,0 0.2,1 1,1");
+    const images = imageRefs.current;
+    const scaleFactor = window.innerWidth < 768 ? 0.3 : 0.2;
+    const gap = window.innerWidth < 768 ? 10 : 20;
+    const imageWidth = window.innerWidth * scaleFactor;
+    const totalRowWidth = imageWidth * images.length + gap * (images.length - 1);
+    const centeredX = (window.innerWidth - totalRowWidth) / 2;
+    // A scaled full-screen element keeps space on both sides of its transform origin.
+    // Offset that space so the five images form a true centred row on screen.
+    const scaleOffset = (window.innerWidth - imageWidth) / 2;
+    const offscreenX = -window.innerWidth;
+
     const ctx = gsap.context(() => {
-      gsap.set(".intro-frame", { opacity: 0 });
-      gsap.set(".intro-word", { opacity: 0, filter: "blur(16px)", y: 12 });
-      gsap.set(".intro-blackscreen", { opacity: 0 });
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setDone(true);
-          onDone();
-        }
-      });
-      const frames = gsap.utils.toArray(".intro-frame");
-      frames.forEach((f) => {
-        gsap.set(f, {
-          x: gsap.utils.random(-600, 600),
-          y: gsap.utils.random(-400, 400),
-          rotate: gsap.utils.random(-25, 25),
-          opacity: 0,
-          scale: 0.6
+      images.forEach((image, index) => {
+        gsap.set(image, {
+          scale: scaleFactor,
+          x: offscreenX,
+          y: [-28, -10, 0, -10, -28][index],
+          rotation: ROTATIONS[index],
+          borderRadius: 10,
+          transformOrigin: "center center"
         });
       });
-      tl.to(frames, {
-        x: 0,
-        y: 0,
-        rotate: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        ease: "expo.out",
-        stagger: { each: 0.05, from: "random" }
-      }, 0.1);
-      const obj = { v: 0 };
-      tl.to(obj, {
-        v: 12,
-        duration: 1,
-        ease: "power2.inOut",
-        onUpdate: () => {
-          if (counterRef.current)
-            counterRef.current.textContent = String(Math.floor(obj.v)).padStart(3, "0");
-        }
-      }, 0.1);
-      tl.to({}, { duration: 0.3 });
-      tl.to(frames, {
-        x: 0,
-        y: 0,
-        scale: 0.05,
-        opacity: 0,
-        duration: 0.8,
-        ease: "expo.inOut",
-        stagger: { each: 0.012, from: "edges" }
-      }, ">");
-      tl.to(".intro-hud", { opacity: 0, duration: 0.3 }, "<");
-      tl.to(".intro-blackscreen", { opacity: 1, duration: 0.3 }, "-=0.2");
-      WORDS.forEach((_, i) => {
-        const sel = `.intro-word-${i}`;
-        const isFirst = i === 0;
-        const isLast = i === WORDS.length - 1;
-        if (isFirst) {
-          tl.to(sel, {
-            opacity: 1,
-            filter: "blur(0px)",
-            y: 0,
-            duration: 0.28,
-            ease: "power3.out"
-          }, ">");
-        } else {
-          tl.set(sel, { opacity: 1, filter: "blur(0px)", y: 0 }, ">");
-        }
-        tl.to({}, { duration: 0.22 });
-        if (isLast) {
-          tl.to(sel, {
-            opacity: 0,
-            filter: "blur(16px)",
-            y: -12,
-            duration: 0.4,
-            ease: "power2.in"
-          });
-        } else {
-          tl.set(sel, { opacity: 0, filter: "blur(0px)", y: 0 });
-        }
+      const tl = gsap.timeline({ delay: 0.25, onComplete: onDone });
+      tl.to(".intro-preloader", { scaleX: 1, duration: 1, ease: glide })
+        .set(".intro-preloader", { transformOrigin: "right" })
+        .to(".intro-preloader", { scaleX: 0, duration: 0.7, ease: hop })
+        .to(".intro-preloader-overlay", {
+          clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
+          duration: 0.9,
+          ease: hop
+        }, "-=0.35");
+
+      images.forEach((image, index) => {
+        tl.to(image, {
+          x: centeredX + (imageWidth + gap) * index - scaleOffset,
+          duration: 1.1,
+          ease: glide
+        }, "-=0.8");
       });
-      tl.to(".intro-curtain", {
-        yPercent: -100,
-        duration: 1,
-        ease: "expo.inOut"
-      }, "+=0.1");
+
+      tl.addLabel("spread", "-=0.15")
+        .to([images[0], images[1]], {
+          x: -window.innerWidth,
+          duration: 0.85,
+          ease: "power3.inOut",
+          stagger: 0.015
+        }, "spread")
+        .to([images[4], images[3]], {
+          x: window.innerWidth,
+          duration: 0.85,
+          ease: "power3.inOut",
+          stagger: 0.015
+        }, "spread")
+        .to(images[2], {
+          scale: 1,
+          x: 0,
+          y: 0,
+          rotation: 0,
+          borderRadius: 0,
+          duration: 1.1,
+          ease: "power4.inOut"
+        }, "spread")
+        .to(rootRef.current, { opacity: 0, duration: 0.16 }, "+=0.1");
     }, rootRef);
+
     return () => ctx.revert();
-  }, [onDone]);
-  if (done) return null;
-  return <div ref={rootRef} className="fixed inset-0 z-[100] pointer-events-none">
-      <div className="intro-curtain absolute inset-0 bg-background overflow-hidden">
-        {
-    /* HUD */
-  }
-        <div className="intro-hud absolute top-6 left-6 md:top-8 md:left-10 flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/60 z-20">
-          <span ref={counterRef}>000</span>
-          <span className="text-foreground/30">/</span>
-          <span>012</span>
-        </div>
-        <div className="intro-hud absolute top-6 right-6 md:top-8 md:right-10 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/60 z-20">
-          Contact Sheet · 2025
-        </div>
-        <div className="intro-hud absolute bottom-6 left-1/2 -translate-x-1/2 font-display text-2xl md:text-3xl tracking-tight text-foreground z-20">
-          MAHYAR<span className="text-accent">.</span>
-        </div>
+  }, [loadedImages, onDone]);
 
-        {
-    /* Contact sheet grid */
-  }
-        <div className="absolute inset-0 flex items-center justify-center p-12 md:p-20">
-          <div className="grid grid-cols-4 grid-rows-3 gap-3 md:gap-4 w-full h-full max-w-5xl max-h-[70vh]">
-            {FRAMES.map((i) => <div
-    key={i}
-    className="intro-frame relative overflow-hidden border border-accent/40"
-    style={{ opacity: 0 }}
-  >
-                <Placeholder kind="photo" label={`${String(i + 1).padStart(2, "0")}/12`} seed={`intro-${i}`} />
-              </div>)}
-          </div>
-        </div>
-
-        {
-    /* Black screen with word sequence */
-  }
-        <div className="intro-blackscreen absolute inset-0 z-30 bg-background flex items-center justify-center">
-          <div className="relative w-full h-32 md:h-40 flex items-center justify-center">
-            {WORDS.map((w, i) => <h2
-    key={w}
-    className={`intro-word intro-word-${i} absolute font-display text-4xl md:text-7xl uppercase tracking-tight text-center px-6 will-change-[filter,opacity,transform]`}
-  >
-                {w}<span className="text-accent">.</span>
-              </h2>)}
-          </div>
-        </div>
+  return <div ref={rootRef} className="fixed inset-0 z-[100] overflow-hidden bg-background">
+      <div className="intro-preloader-overlay absolute inset-0 z-30 bg-background" />
+      <div className="intro-preloader absolute inset-x-0 top-0 z-40 h-1 origin-left scale-x-0 bg-accent" />
+      <div className="absolute inset-0">
+        {INTRO_IMAGES.map((src, index) => <div
+          key={src}
+          ref={(element) => { imageRefs.current[index] = element; }}
+          className="intro-image absolute inset-0 overflow-hidden bg-card shadow-2xl"
+        >
+          <OptimizedImage
+            src={src}
+            alt={index === 2 ? "Mahyar hero" : ""}
+            priority
+            sizes="100vw"
+            className="object-cover"
+            onLoad={() => setLoadedImages((count) => Math.min(INTRO_IMAGES.length, count + 1))}
+          />
+        </div>)}
       </div>
     </div>;
 }
-export {
-  Intro
-};
+
+export { Intro };

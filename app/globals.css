@@ -192,6 +192,14 @@
     border-color: #ffffff;
     mix-blend-mode: difference;
   }
+  .cursor-ring--service-card {
+    border-color: #0f0f0f;
+    mix-blend-mode: normal;
+  }
+  .cursor-dot--service-card {
+    background: #0f0f0f;
+    mix-blend-mode: normal;
+  }
   html.has-custom-cursor,
   html.has-custom-cursor body,
   html.has-custom-cursor a,
@@ -206,6 +214,3 @@
     }
   }
 }
-
-
-

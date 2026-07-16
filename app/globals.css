@@ -84,9 +84,9 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.92 0.21 122);
 
-  --font-display: "Fraunces", serif;
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Bahnschrift", "Arial Narrow", sans-serif;
+  --font-sans: "Segoe UI", Arial, sans-serif;
+  --font-mono: Consolas, "Courier New", monospace;
 
   /* Placeholder tone — deep neutral with lime hairline */
   --placeholder: oklch(0.20 0 0);
@@ -144,7 +144,10 @@
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); }
+  .font-display {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" 85, "wght" 700;
+  }
   .font-mono { font-family: var(--font-mono); }
   .grain::before {
     content: "";

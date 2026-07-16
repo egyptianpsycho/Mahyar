@@ -13,25 +13,29 @@ const SERVICES = [
     idx: "01",
     title: "Branding & Strategy",
     blurb: "Clear positioning and distinctive brand systems built to move your business forward.",
-    badge: "Foundation"
+    badge: "Foundation",
+    details: ["Brand positioning and audience definition", "Visual identity direction and art direction", "Messaging architecture and brand guidelines"]
   },
   {
     idx: "02",
     title: "Marketing & Content Creation",
     blurb: "Campaigns and content with a point of view, designed to earn attention over time.",
-    badge: "Growth"
+    badge: "Growth",
+    details: ["Campaign concepts and channel strategy", "Social content systems and editorial calendars", "Copywriting, creative direction and reporting"]
   },
   {
     idx: "03",
     title: "Media Production",
     blurb: "Photography, film and motion that make the story feel as strong as the idea.",
-    badge: "Production"
+    badge: "Production",
+    details: ["Creative treatment and production planning", "Photography, film, motion and post-production", "Platform-ready edits for every format"]
   },
   {
     idx: "04",
     title: "Graphic Design & Web Development",
     blurb: "Digital experiences and visual tools that bring every part of your brand together.",
-    badge: "Digital"
+    badge: "Digital",
+    details: ["Web design and responsive development", "Digital campaigns, motion and launch assets", "Design systems that scale with your team"]
   }
 ];
 
@@ -80,7 +84,7 @@ function WhatWeDo() {
 
       const timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: stage,
+          trigger: stage, 
           start: "top 15%",
           end: "+=115%",
           pin: true,
@@ -156,6 +160,7 @@ function WhatWeDo() {
                       description={service.blurb}
                       price={`[ ${service.idx} ]`}
                       badgeLabel={service.badge}
+                      details={service.details}
                       imageSrc={photo(`whatwedo-${service.idx}`)}
                       className="h-full min-h-0 bg-card border-border"
                     />

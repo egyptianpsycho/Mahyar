@@ -18,7 +18,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { getLenis } from "@/hooks/useLenis";
 function Portfolio() {
-  const [introDone, setIntroDone] = useState(false);
+  const [introDone, setIntroDone] = useState(true); //edited
   const [open, setOpen] = useState(null);
   const [openMedia, setOpenMedia] = useState(null);
   const footerRef = useRef(null);
@@ -56,9 +56,9 @@ function Portfolio() {
     };
   }, [introDone]);
   return <div className="relative bg-background text-foreground grain">
-      {!introDone && <Intro onDone={() => setIntroDone(true)} />}
+      {/* {!introDone && <Intro onDone={() => setIntroDone(true)} />}  */}
       <Cursor />
-      {/* Navigation is intentionally disabled while the new intro is being tuned. */}
+      {/* Navigation is intentionally disabled while the new intro is being tuned.  */}
       {false && <Nav introDone={introDone} />}
       <div className="relative z-10 bg-background" style={{ marginBottom: footerH }}>
         <main>

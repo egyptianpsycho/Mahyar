@@ -47,6 +47,8 @@ function Row({ d, onOpen }) {
     style={{ width: 0, willChange: "width" }}
   >
         <OptimizedImage
+          loading="lazy"
+          priority={false}
           src={imgSrc(d.seed)}
           alt=""
           className="object-cover"

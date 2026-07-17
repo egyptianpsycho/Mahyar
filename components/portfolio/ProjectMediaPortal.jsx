@@ -24,6 +24,8 @@ function MediaTile({ item, className }) {
     />;
   }
   return <OptimizedImage
+    loading="lazy"
+    priority={false}
     src={item.src}
     alt={item.alt ?? ""}
     className={className}

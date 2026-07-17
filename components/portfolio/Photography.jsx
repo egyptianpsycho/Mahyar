@@ -13,9 +13,18 @@ function Photography({ onOpen, hideHeader }) {
     const ctx = gsap.context(() => {
       gsap.utils.toArray(".photo-tile").forEach((tile) => {
         const reveal = animateWhenImageReady(tile, () => {
-          gsap.fromTo(tile, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out" });
+          gsap.fromTo(
+            tile,
+            { y: 80, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, ease: "expo.out" }
+          );
         });
-        ScrollTrigger.create({ trigger: tile, start: "top 90%", once: true, onEnter: reveal.waitForImage });
+        ScrollTrigger.create({
+          trigger: tile,
+          start: "top 90%",
+          once: true,
+          onEnter: reveal.waitForImage,
+        });
         const inner = tile.querySelector(".photo-inner");
         if (inner) {
           const parallax = animateWhenImageReady(tile, () => {
@@ -25,35 +34,65 @@ function Photography({ onOpen, hideHeader }) {
               {
                 yPercent: 8,
                 ease: "none",
-                scrollTrigger: { trigger: tile, start: "top bottom", end: "bottom top", scrub: true }
+                scrollTrigger: {
+                  trigger: tile,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: true,
+                },
               }
             );
           });
-          ScrollTrigger.create({ trigger: tile, start: "top bottom", once: true, onEnter: parallax.waitForImage });
+          ScrollTrigger.create({
+            trigger: tile,
+            start: "top bottom",
+            once: true,
+            onEnter: parallax.waitForImage,
+          });
         }
       });
     }, ref);
     return () => ctx.revert();
   }, []);
-  return <section ref={ref} id="photography" className={hideHeader ? "px-6 md:px-10 pb-32" : "px-6 md:px-10 py-32"}>
-      {!hideHeader && <header className="flex justify-between items-end mb-16">
+  return (
+    <section
+      ref={ref}
+      id="photography"
+      className={hideHeader ? "px-6 md:px-10 pb-32" : "px-6 md:px-10 py-32"}
+    >
+      {!hideHeader && (
+        <header className="flex justify-between items-end mb-16">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40 mb-3">[ 04 ] Selected stills</p>
-            <h2 className="font-display text-5xl md:text-7xl uppercase tracking-tighter">Photography</h2>
+            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40 mb-3">
+              [ 04 ] Selected stills
+            </p>
+            <h2 className="font-display text-5xl md:text-7xl uppercase tracking-tighter">
+              Photography
+            </h2>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-foreground/40">15 projects</span>
-        </header>}
-
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-foreground/40">
+            15 projects
+          </span>
+        </header>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[18rem] md:auto-rows-[22rem] gap-4">
-        {photoProjects.map((p) => <button
-    key={p.id}
-    data-project-id={p.id}
-    onClick={() => onOpen(p)}
-    className={`photo-tile group relative overflow-hidden text-left ${p.span ?? ""} ${p.aspect ? "" : ""}`}
-  >
+        {photoProjects.map((p) => (
+          <button
+            key={p.id}
+            data-project-id={p.id}
+            onClick={() => onOpen(p)}
+            className={`photo-tile group relative overflow-hidden text-left ${
+              p.span ?? ""
+            } ${p.aspect ? "" : ""}`}
+          >
             <div className="photo-inner absolute inset-[-8%]">
-              <Placeholder kind="photo" label={`Photo ${p.index}`} seed={p.seeds[0]} className="h-full" />
+              <Placeholder
+                kind="photo"
+                label={`Photo ${p.index}`}
+                seed={p.seeds[0]}
+                className="h-full"
+              />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
             <div className="absolute inset-0 p-5 flex flex-col justify-between">
@@ -62,15 +101,21 @@ function Photography({ onOpen, hideHeader }) {
                 <span>{p.year}</span>
               </div>
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-foreground/50 mb-1">{p.category}</p>
-                <h3 className="font-display text-2xl md:text-3xl uppercase tracking-tight leading-none">{p.title}</h3>
+                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-foreground/50 mb-1">
+                  {p.category}
+                </p>
+                <h3 className="font-display text-2xl md:text-3xl uppercase tracking-tight leading-none">
+                  {p.title}
+                </h3>
               </div>
             </div>
-            <span className="absolute top-4 right-4 size-9 rounded-full border border-foreground/30 flex items-center justify-center font-mono text-xs opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 bg-background/40 backdrop-blur-sm">↗</span>
-          </button>)}
+            <span className="absolute top-4 right-4 size-9 rounded-full border border-foreground/30 flex items-center justify-center font-mono text-xs opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 bg-background/40 backdrop-blur-sm">
+              ↗
+            </span>
+          </button>
+        ))}
       </div>
-    </section>;
+    </section>
+  );
 }
-export {
-  Photography
-};
+export { Photography };

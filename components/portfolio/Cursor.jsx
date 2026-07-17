@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-const INTERACTIVE_SELECTOR = "a, button, [role='button'], label, input, textarea, select, [data-cursor='text']";
+const INTERACTIVE_SELECTOR = "a, button, [role='button'], label, input,.hero-wordmark,.hero-detail, textarea, select, [data-cursor='text']";
 const TEXT_TAGS = /* @__PURE__ */ new Set([
   "H1",
   "H2",
@@ -16,7 +16,7 @@ const TEXT_TAGS = /* @__PURE__ */ new Set([
   "LI",
   "A",
   "BUTTON",
-  "LABEL"
+  "LABEL",
 ]);
 function pointHitsText(el, x, y) {
   const range = document.createRange();

@@ -41,6 +41,14 @@ const SERVICES = [
 
 const photo = (seed) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`;
 
+// Helper — set willChange on NodeList, Array, or selector string
+const setWC = (targets, value) => {
+  const els = typeof targets === "string"
+    ? document.querySelectorAll(targets)
+    : targets;
+  Array.from(els).forEach((el) => { el.style.willChange = value; });
+};
+
 function WhatWeDo() {
   const ref = useRef(null);
 
@@ -57,55 +65,91 @@ function WhatWeDo() {
       gsap.set(cards, { autoAlpha: 0, filter: "blur(14px)" });
       let cardsVisible = false;
       let lastExpansionProgress = 0;
+
       const revealCards = () => {
         if (cardsVisible) return;
         cardsVisible = true;
+        // Promote before animating
+        cards.forEach((el) => { el.style.willChange = "filter, opacity"; });
         gsap.to(cards, {
           autoAlpha: 1,
           filter: "blur(0px)",
           duration: 0.42,
           stagger: 0.08,
           ease: "power2.out",
-          overwrite: true
+          overwrite: true,
+          onComplete: () => {
+            // Release after done — cards are static now
+            cards.forEach((el) => { el.style.willChange = "auto"; });
+          },
         });
       };
+
       const hideCards = () => {
         if (!cardsVisible) return;
         cardsVisible = false;
+        cards.forEach((el) => { el.style.willChange = "filter, opacity"; });
         gsap.to(cards, {
           autoAlpha: 0,
           filter: "blur(14px)",
           duration: 0.24,
           stagger: { each: 0.05, from: "end" },
           ease: "power2.in",
-          overwrite: true
+          overwrite: true,
+          onComplete: () => {
+            cards.forEach((el) => { el.style.willChange = "auto"; });
+          },
         });
       };
 
+      const getPanelEl = () => ref.current?.querySelector(".services-panel");
+      const getLabelEl = () => ref.current?.querySelector(".services-label");
+
       const timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: stage, 
+          trigger: stage,
           start: "top 15%",
           end: "+=115%",
           pin: true,
           scrub: 0.7,
           anticipatePin: 1,
-          invalidateOnRefresh: true
-        }
+          invalidateOnRefresh: true,
+          refreshPriority: -1,
+          onEnter: () => {
+            const p = getPanelEl();
+            const l = getLabelEl();
+            if (p) p.style.willChange = "top, width, height, border-radius";
+            if (l) l.style.willChange = "filter, opacity";
+          },
+          onLeave: () => {
+            const p = getPanelEl();
+            const l = getLabelEl();
+            if (p) p.style.willChange = "auto";
+            if (l) l.style.willChange = "auto";
+          },
+          onEnterBack: () => {
+            const p = getPanelEl();
+            const l = getLabelEl();
+            if (p) p.style.willChange = "top, width, height, border-radius";
+            if (l) l.style.willChange = "filter, opacity";
+          },
+          onLeaveBack: () => {
+            const p = getPanelEl();
+            const l = getLabelEl();
+            if (p) p.style.willChange = "auto";
+            if (l) l.style.willChange = "auto";
+          },
+        },
       });
 
       timeline
-        .to(panel, {
-          top: "50%",
-          duration: 0.42,
-          ease: "power2.inOut"
-        })
+        .to(panel, { top: "50%", duration: 0.42, ease: "power2.inOut" })
         .addLabel("expand")
         .to(label, {
           autoAlpha: 0,
           filter: "blur(14px)",
           duration: 0.28,
-          ease: "power1.out"
+          ease: "power1.out",
         }, "expand")
         .to(panel, {
           width: () => ref.current.querySelector(stage).clientWidth,
@@ -118,16 +162,21 @@ function WhatWeDo() {
             if (progress < lastExpansionProgress) hideCards();
             else if (progress >= 0.995) revealCards();
             lastExpansionProgress = progress;
-          }
+          },
         }, "expand")
         .to(pinHold, { progress: 1, duration: 0.75 });
+
     }, ref);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={ref} id="services" className="border-t border-border px-6 py-32 md:px-10">
+    <section
+      ref={ref}
+      id="services"
+      className="border-t border-border px-6 py-32 md:px-10 bg-black relative"
+    >
       <div className="mx-auto max-w-5xl">
         <div className="mb-10 text-center">
           <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
@@ -144,7 +193,7 @@ function WhatWeDo() {
         <div className="services-scroll-wrap relative h-[35rem] pt-8 md:h-[42rem]">
           <div className="relative h-full w-full">
             <div className="services-panel absolute left-1/2 top-8 h-16 w-64 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[2rem] bg-[#0F0F0F] will-change-[top,width,height] md:w-72">
-              <div className="services-label absolute inset-0 z-10 flex items-center justify-center whitespace-nowrap will-change-[filter,opacity]">
+              <div className="services-label absolute inset-0 z-10 flex items-center justify-center whitespace-nowrap">
                 <Magnetic intensity={0.25} springOptions={{ bounce: 0.1 }} actionArea="global" range={220}>
                   <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground">
                     Our Services
@@ -154,7 +203,7 @@ function WhatWeDo() {
 
               <div className="grid h-full grid-cols-1 gap-4 p-4 pt-5 md:grid-cols-2 md:gap-6 md:p-6">
                 {SERVICES.map((service) => (
-                  <div key={service.idx} data-cursor-card className="service-card min-h-0 will-change-[filter,opacity]">
+                  <div key={service.idx} data-cursor-card className="service-card min-h-0">
                     <TiltCard
                       title={service.title}
                       description={service.blurb}

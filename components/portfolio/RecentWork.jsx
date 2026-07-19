@@ -114,7 +114,7 @@ function RecentWork({ onOpen, onOpenMedia }) {
     });
   };
   return (
-    <section ref={ref} id="recent" className="px-6 md:px-10 py-32 relative bg-background">
+    <section ref={ref} id="recent" className="px-6 md:px-10 py-32 relative bg-background z-20">
       <header className="flex justify-between items-end mb-16">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40 mb-3">

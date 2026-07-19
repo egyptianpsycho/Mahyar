@@ -50,6 +50,7 @@ function Intro({ onDone }) {
           rotation: ROTATIONS[index],
           borderRadius: "2.5rem",
           transformOrigin: "center center",
+          
         });
       });
 
@@ -164,6 +165,7 @@ function Intro({ onDone }) {
               alt={index === 2 ? "Mahyar hero" : ""}
               priority
               sizes="100vw"
+              quality={100}
               className="object-cover"
               onLoad={() => setLoadedImages((c) => Math.min(INTRO_IMAGES.length, c + 1))}
             />
@@ -173,7 +175,6 @@ function Intro({ onDone }) {
     </div>
   );
 }
-
 export { Intro };
 // "use client";
 

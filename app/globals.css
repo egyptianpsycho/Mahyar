@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @source "../components";
@@ -63,7 +64,7 @@
   --secondary-foreground: oklch(0.97 0.005 90);
   --muted: oklch(0.17 0 0);
   --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.92 0.21 122);
+  --accent: #7DF9FF;
   --accent-foreground: oklch(0.13 0 0);
   --destructive: oklch(0.65 0.24 27);
   --destructive-foreground: oklch(0.97 0.005 90);
@@ -85,6 +86,7 @@
   --sidebar-ring: oklch(0.92 0.21 122);
 
   --font-display: "Bahnschrift", "Arial Narrow", sans-serif;
+  --font-hero: "Barlow Condensed", sans-serif;
   --font-sans: "Segoe UI", Arial, sans-serif;
   --font-mono: Consolas, "Courier New", monospace;
 
@@ -123,6 +125,27 @@
   --font-mono: var(--font-mono);
   --color-placeholder: var(--placeholder);
   --color-placeholder-ink: var(--placeholder-ink);
+}
+
+/* Chrome / Safari / Edge */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 @layer base {
@@ -217,3 +240,5 @@
     }
   }
 }
+
+
